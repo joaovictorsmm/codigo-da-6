@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define SIZE 3
+
+void inicializarTabuleiro(char tabuleiro[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            tabuleiro[i][j] = ' ';
+        }
+    }
+}
+
+void imprimirTabuleiro(char tabuleiro[SIZE][SIZE]) {
+    printf("\n");
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            printf(" %c ", tabuleiro[i][j]);
+            if (j < SIZE - 1) printf("|");
+        }
+        printf("\n");
+        if (i < SIZE - 1) printf("---+---+---\n");
+    }
+    printf("\n");
+}
+
+bool verificarVitoria(char tabuleiro[SIZE][SIZE], char jogador) {
+    // Verificar linhas
+    for (int i = 0; i < SIZE; i++) {
+        if (tabuleiro[i][0] == jogador && tabuleiro[i][1] == jogador && tabuleiro[i][2] == jogador) {
+            return true;
+        }
+    }
+    // Verificar colunas
+    for (int i = 0; i < SIZE; i++) {
+        if (tabuleiro[0][i] == jogador && tabuleiro[1][i] == jogador && tabuleiro[2][i] == jogador) {
+            return true;
+        }
+    }
+    // Verificar diagonais
+    if (tabuleiro[0][0] == jogador && tabuleiro[1][1] == jogador && tabuleiro[2][2] == jogador) {
+        return true;
+    }
+    if (tabuleiro[0][2] == jogador && tabuleiro[1][1] == jogador && tabuleiro[2][0] == jogador) {
+        return true;
+    }
+    return false;
+}
+
+bool verificarEmpate(char tabuleiro[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (tabuleiro[i][j] == ' ') {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void jogar(char tabuleiro[SIZE][SIZE], char jogador) {
+    int linha, coluna;
+    while (true) {
+        printf("Jogador %c, digite a linha e a coluna (0, 1, 2): ", jogador);
+        scanf("%d %d", &linha, &coluna);
+        if (linha >= 0 && linha < SIZE && coluna >= 0 && coluna < SIZE && tabuleiro[linha][coluna] == ' ') {
+            tabuleiro[linha][coluna] = jogador;
+            break;
+        } else {
+            printf("Movimento inválido. Tente novamente.\n");
+        }
+    }
+}
+
+int main() {
+    char tabuleiro[SIZE][SIZE];
+    char jogadorAtual = 'X';
+    char jogarNovamente;
+
+    do {
+        inicializarTabuleiro(tabuleiro);
+        bool jogoFinalizado = false;
+
+        while (!jogoFinalizado) {
+            imprimirTabuleiro(tabuleiro);
+            jogar(tabuleiro, jogadorAtual);
+
+            if (verificarVitoria(tabuleiro, jogadorAtual)) {
+                imprimirTabuleiro(tabuleiro);
+                printf("Jogador %c venceu!\n", jogadorAtual);
+                jogoFinalizado = true;
+            } else if (verificarEmpate(tabuleiro)) {
+                imprimirTabuleiro(tabuleiro);
+                printf("O jogo empatou!\n");
+                jogoFinalizado = true;
+            } else {
+                jogadorAtual = (jogadorAtual == 'X') ? 'O' : 'X';
+            }
+        }
+
+        printf("Deseja jogar novamente? (s/n): ");
+        scanf(" %c", &jogarNovamente);
+    } while (jogarNovamente == 's');
+
+    return 0;
+}
